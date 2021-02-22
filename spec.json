@@ -583,19 +583,10 @@
         "operationId": "RouteCreateSilence",
         "parameters": [
           {
-            "x-go-name": "Id",
-            "description": "ID of any existing silence to overwrite",
-            "name": "id",
-            "in": "body",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
             "name": "Body",
             "in": "body",
             "schema": {
-              "$ref": "#/definitions/Silence"
+              "$ref": "#/definitions/postableSilence"
             }
           }
         ],
