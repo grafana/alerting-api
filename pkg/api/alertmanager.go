@@ -41,14 +41,6 @@ import (
 //       200: GettableAlerts
 //       400: ValidationError
 
-// swagger:route POST /alertmanager/{DatasourceId}/api/v2/alerts alertmanager RoutePostAmAlerts
-//
-// create alertmanager alerts
-//
-//     Responses:
-//       200: Ack
-//       400: ValidationError
-
 // swagger:route GET /alertmanager/{DatasourceId}/api/v2/alerts/groups alertmanager RouteGetAmAlertGroups
 //
 // get alertmanager alerts
@@ -148,12 +140,6 @@ type AlertsParams struct {
 	Receivers []string `json:"receivers"`
 }
 
-// swagger:parameters RoutePostAmAlerts
-type PostableAlerts struct {
-	// in:body
-	PostableAlerts []amv2.PostableAlert `yaml:"" json:""`
-}
-
 // swagger:parameters RoutePostAlertingConfig
 type BodyAlertingConfig struct {
 	// in:body
@@ -161,7 +147,7 @@ type BodyAlertingConfig struct {
 }
 
 // alertmanager routes
-// swagger:parameters RoutePostAlertingConfig RouteGetAlertingConfig RouteDeleteAlertingConfig RouteGetAmAlerts RoutePostAmAlerts RouteGetAmAlertGroups RouteGetSilences RouteCreateSilence RouteGetSilence RouteDeleteSilence RoutePostAlertingConfig
+// swagger:parameters RoutePostAlertingConfig RouteGetAlertingConfig RouteDeleteAlertingConfig RouteGetAmAlerts RouteGetAmAlertGroups RouteGetSilences RouteCreateSilence RouteGetSilence RouteDeleteSilence RoutePostAlertingConfig
 // ruler routes
 // swagger:parameters RouteGetRulesConfig RoutePostNameRulesConfig RouteGetNamespaceRulesConfig RouteDeleteNamespaceRulesConfig RouteGetRulegGroupConfig RouteDeleteRuleGroupConfig
 // prom routes

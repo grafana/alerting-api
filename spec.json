@@ -86,45 +86,6 @@
             }
           }
         }
-      },
-      "post": {
-        "description": "create alertmanager alerts",
-        "tags": [
-          "alertmanager"
-        ],
-        "operationId": "RoutePostAmAlerts",
-        "parameters": [
-          {
-            "name": "PostableAlerts",
-            "in": "body",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/postableAlert"
-              }
-            }
-          },
-          {
-            "type": "string",
-            "name": "DatasourceId",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Ack",
-            "schema": {
-              "$ref": "#/definitions/Ack"
-            }
-          },
-          "400": {
-            "description": "ValidationError",
-            "schema": {
-              "$ref": "#/definitions/ValidationError"
-            }
-          }
-        }
       }
     },
     "/alertmanager/{DatasourceId}/api/v2/alerts/groups": {
