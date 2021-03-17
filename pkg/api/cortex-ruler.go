@@ -1,8 +1,10 @@
 package api
 
 import (
-	"github.com/grafana/grafana/pkg/services/ngalert"
-	"github.com/grafana/grafana/pkg/services/ngalert/eval"
+	"encoding/json"
+	"fmt"
+
+	"github.com/grafana/grafana/pkg/services/ngalert/models"
 	"github.com/prometheus/common/model"
 )
 
@@ -89,13 +91,52 @@ type RuleGroupConfigResponse struct {
 }
 
 // swagger:model
-type NamespaceConfigResponse map[string]RuleGroupConfig
+type NamespaceConfigResponse map[string][]RuleGroupConfig
 
 // swagger:model
 type RuleGroupConfig struct {
 	Name     string             `yaml:"name" json:"name"`
 	Interval model.Duration     `yaml:"interval,omitempty" json:"interval,omitempty"`
 	Rules    []ExtendedRuleNode `yaml:"rules" json:"rules"`
+}
+
+func (c *RuleGroupConfig) UnmarshalJSON(b []byte) error {
+	type plain RuleGroupConfig
+	if err := json.Unmarshal(b, (*plain)(c)); err != nil {
+		return err
+	}
+
+	return c.validate()
+}
+
+// Type requires validate has been called and just checks the first rule type
+func (c *RuleGroupConfig) Type() (backend Backend) {
+	for _, rule := range c.Rules {
+		switch rule.Type() {
+		case GrafanaManagedRule:
+			return GrafanaBackend
+		case LoTexManagedRule:
+			return LoTexRulerBackend
+		}
+	}
+	return
+}
+
+func (c *RuleGroupConfig) validate() error {
+	var hasGrafRules, hasLotexRules bool
+	for _, rule := range c.Rules {
+		switch rule.Type() {
+		case GrafanaManagedRule:
+			hasGrafRules = true
+		case LoTexManagedRule:
+			hasLotexRules = true
+		}
+	}
+
+	if hasGrafRules && hasLotexRules {
+		return fmt.Errorf("cannot mix Grafana & Prometheus style rules")
+	}
+	return nil
 }
 
 type ApiRuleNode struct {
@@ -107,28 +148,40 @@ type ApiRuleNode struct {
 	Annotations map[string]string `yaml:"annotations,omitempty" json:"annotations,omitempty"`
 }
 
+type RuleType int
+
+const (
+	GrafanaManagedRule RuleType = iota
+	LoTexManagedRule
+)
+
 type ExtendedRuleNode struct {
-	ApiRuleNode
+	*ApiRuleNode
 	//GrafanaManagedAlert yaml.Node `yaml:"grafana_alert,omitempty"`
-	GrafanaManagedAlert ExtendedUpsertAlertDefinitionCommand `yaml:"grafana_alert,omitempty" json:"grafana_alert,omitempty"`
+	GrafanaManagedAlert *ExtendedUpsertAlertDefinitionCommand `yaml:"grafana_alert,omitempty" json:"grafana_alert,omitempty"`
 }
 
-// UpsertAlertDefinitionCommand is copy of the unexported struct:
-// https://github.com/grafana/grafana/blob/debb82e12417e82a0e2bd09e1a450065f884c1bc/pkg/services/ngalert/models.go#L85
-type UpsertAlertDefinitionCommand struct {
-	Title string `json:"title" yaml:"title"`
-	// OrgID is an obsolete field (it will derive from the x-grafana-org-id header)
-	OrgID int64 `json:"-" yaml:"-"`
-	// Condition is the refID of the query or expression to be evaluated
-	Condition string `json:"condition" yaml:"condition"`
-	// Data is an array of the queries and expressions
-	Data []eval.AlertQuery `json:"data" yaml:"data"`
-	// IntervalSeconds is an obsolete field (it will derive from the ruleGroup interval)
-	IntervalSeconds *int64 `json:"-" yaml:"-"`
-	// UID is set only for existing definitions
-	UID string `json:"uid" yaml:"uid"`
+func (n *ExtendedRuleNode) Type() RuleType {
+	if n.ApiRuleNode != nil {
+		return LoTexManagedRule
+	}
+	return GrafanaManagedRule
+}
 
-	Result *ngalert.AlertDefinition `json:"-" yaml:"-"`
+func (n *ExtendedRuleNode) UnmarshalJSON(b []byte) error {
+	type plain ExtendedRuleNode
+	if err := json.Unmarshal(b, (*plain)(n)); err != nil {
+		return err
+	}
+
+	if n.ApiRuleNode != nil && n.GrafanaManagedAlert != nil {
+		return fmt.Errorf("cannot have both Prometheus style rules and Grafana rules together")
+	}
+	if n.ApiRuleNode == nil && n.GrafanaManagedAlert == nil {
+		return fmt.Errorf("cannot have empty rule")
+	}
+
+	return nil
 }
 
 // swagger:enum NoDataState
@@ -153,10 +206,12 @@ const (
 // with properties of grafana dashboard alerts
 // swagger:model
 type ExtendedUpsertAlertDefinitionCommand struct {
-	UpsertAlertDefinitionCommand
+	models.UpdateAlertDefinitionCommand
 	NoDataState         NoDataState            `json:"no_data_state" yaml:"no_data_state"`
 	ExecutionErrorState ExecutionErrorState    `json:"exec_err_state" yaml:"exec_err_state"`
 	Settings            map[string]interface{} `json:"settings" yaml:"settings"`
+	// Receivers are optional and used for migrating notification channels of existing alerts
+	Receivers []string `json:"receivers" yaml:"receivers"`
 	// internal state
 	FolderUID      string   `json:"-" yaml:"-"`
 	DatasourceUIDs []string `json:"-" yaml:"-"`

@@ -1,14 +1,12 @@
 package api
 
 import (
-	"time"
-
-	"github.com/grafana/grafana/pkg/services/ngalert/eval"
+	"github.com/grafana/grafana/pkg/services/ngalert/models"
 	"github.com/prometheus/alertmanager/config"
 	"github.com/prometheus/prometheus/promql"
 )
 
-// swagger:route Get /api/v1/receiver/test testing RouteTestReceiverConfig
+// swagger:route Post /api/v1/receiver/test testing RouteTestReceiverConfig
 //
 // Test receiver
 //
@@ -23,7 +21,7 @@ import (
 //		 412: SmtpNotEnabled
 //		 500: Failure
 
-// swagger:route Get /api/v1/rule/test testing RouteTestRuleConfig
+// swagger:route Post /api/v1/rule/test testing RouteTestRuleConfig
 //
 // Test rule
 //
@@ -52,7 +50,7 @@ type TestRuleRequest struct {
 type TestRulePayload struct {
 	Expr LotexQuery `json:"expr,omitempty"`
 	// GrafanaManagedCondition for grafana alerts
-	GrafanaManagedCondition EvalAlertConditionCommand `json:"grafana_condition,omitempty"`
+	GrafanaManagedCondition models.EvalAlertConditionCommand `json:"grafana_condition,omitempty"`
 }
 
 // swagger:model
@@ -61,13 +59,6 @@ type LotexQuery struct {
 	Expr string
 	// DatasourceUID is required if the query will be sent to grafana to be executed
 	DatasourceUID string `json:"datasourceUid,omitempty"`
-}
-
-// swagger:model
-type EvalAlertConditionCommand struct {
-	Condition string            `json:"condition"`
-	Data      []eval.AlertQuery `json:"data"`
-	Now       time.Time         `json:"now"`
 }
 
 // swagger:model
@@ -85,15 +76,15 @@ type AlertInstancesResponse struct {
 
 // swagger:model
 type ExtendedReceiver struct {
-	EmailConfigs     config.EmailConfig     `yaml:"email_configs,omitempty" json:"email_configs,omitempty"`
-	PagerdutyConfigs config.PagerdutyConfig `yaml:"pagerduty_configs,omitempty" json:"pagerduty_configs,omitempty"`
-	SlackConfigs     config.SlackConfig     `yaml:"slack_configs,omitempty" json:"slack_configs,omitempty"`
-	WebhookConfigs   config.WebhookConfig   `yaml:"webhook_configs,omitempty" json:"webhook_configs,omitempty"`
-	OpsGenieConfigs  config.OpsGenieConfig  `yaml:"opsgenie_configs,omitempty" json:"opsgenie_configs,omitempty"`
-	WechatConfigs    config.WechatConfig    `yaml:"wechat_configs,omitempty" json:"wechat_configs,omitempty"`
-	PushoverConfigs  config.PushoverConfig  `yaml:"pushover_configs,omitempty" json:"pushover_configs,omitempty"`
-	VictorOpsConfigs config.VictorOpsConfig `yaml:"victorops_configs,omitempty" json:"victorops_configs,omitempty"`
-	GrafanaReceiver  GrafanaReceiver        `yaml:"grafana_managed_receiver,omitempty" json:"grafana_managed_receiver,omitempty"`
+	EmailConfigs     config.EmailConfig      `yaml:"email_configs,omitempty" json:"email_configs,omitempty"`
+	PagerdutyConfigs config.PagerdutyConfig  `yaml:"pagerduty_configs,omitempty" json:"pagerduty_configs,omitempty"`
+	SlackConfigs     config.SlackConfig      `yaml:"slack_configs,omitempty" json:"slack_configs,omitempty"`
+	WebhookConfigs   config.WebhookConfig    `yaml:"webhook_configs,omitempty" json:"webhook_configs,omitempty"`
+	OpsGenieConfigs  config.OpsGenieConfig   `yaml:"opsgenie_configs,omitempty" json:"opsgenie_configs,omitempty"`
+	WechatConfigs    config.WechatConfig     `yaml:"wechat_configs,omitempty" json:"wechat_configs,omitempty"`
+	PushoverConfigs  config.PushoverConfig   `yaml:"pushover_configs,omitempty" json:"pushover_configs,omitempty"`
+	VictorOpsConfigs config.VictorOpsConfig  `yaml:"victorops_configs,omitempty" json:"victorops_configs,omitempty"`
+	GrafanaReceiver  PostableGrafanaReceiver `yaml:"grafana_managed_receiver,omitempty" json:"grafana_managed_receiver,omitempty"`
 }
 
 // swagger:model
