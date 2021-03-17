@@ -804,61 +804,6 @@
       },
       "x-go-package": "github.com/grafana/alerting-api/pkg/api"
     },
-    "AlertDefinition": {
-      "type": "object",
-      "title": "AlertDefinition is the model for alert definitions in Alerting NG.",
-      "properties": {
-        "condition": {
-          "type": "string",
-          "x-go-name": "Condition"
-        },
-        "data": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/AlertQuery"
-          },
-          "x-go-name": "Data"
-        },
-        "id": {
-          "type": "integer",
-          "format": "int64",
-          "x-go-name": "ID"
-        },
-        "intervalSeconds": {
-          "type": "integer",
-          "format": "int64",
-          "x-go-name": "IntervalSeconds"
-        },
-        "orgId": {
-          "type": "integer",
-          "format": "int64",
-          "x-go-name": "OrgID"
-        },
-        "paused": {
-          "type": "boolean",
-          "x-go-name": "Paused"
-        },
-        "title": {
-          "type": "string",
-          "x-go-name": "Title"
-        },
-        "uid": {
-          "type": "string",
-          "x-go-name": "UID"
-        },
-        "updated": {
-          "type": "string",
-          "format": "date-time",
-          "x-go-name": "Updated"
-        },
-        "version": {
-          "type": "integer",
-          "format": "int64",
-          "x-go-name": "Version"
-        }
-      },
-      "x-go-package": "github.com/grafana/grafana/pkg/services/ngalert/models"
-    },
     "AlertDiscovery": {
       "type": "object",
       "title": "AlertDiscovery has info for all active alerts.",
@@ -1394,13 +1339,36 @@
       },
       "x-go-package": "github.com/grafana/alerting-api/pkg/api"
     },
-    "ExtendedUpsertAlertDefinitionCommand": {
-      "description": "ExtendedUpsertAlertDefinitionCommand extends UpsertAlertDefinitionCommand\nwith properties of grafana dashboard alerts",
+    "ExtendedUpdateAlertDefinitionCommand": {
       "type": "object",
       "properties": {
-        "Result": {
-          "$ref": "#/definitions/AlertDefinition"
+        "condition": {
+          "type": "string",
+          "x-go-name": "Condition"
         },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AlertQuery"
+          },
+          "x-go-name": "Data"
+        },
+        "intervalSeconds": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "IntervalSeconds"
+        },
+        "title": {
+          "type": "string",
+          "x-go-name": "Title"
+        }
+      },
+      "x-go-package": "github.com/grafana/alerting-api/pkg/api"
+    },
+    "ExtendedUpsertAlertDefinitionCommand": {
+      "description": "ExtendedUpsertAlertDefinitionCommand extends ExtendedUpdateAlertDefinitionCommand\nwith properties of grafana dashboard alerts",
+      "type": "object",
+      "properties": {
         "condition": {
           "type": "string",
           "x-go-name": "Condition"
@@ -2907,8 +2875,9 @@
       "x-go-package": "github.com/grafana/alerting-api/pkg/api"
     },
     "URL": {
+      "description": "The general form represented is:\n\n[scheme:][//[userinfo@]host][/]path[?query][#fragment]\n\nURLs that do not start with a slash after the scheme are interpreted as:\n\nscheme:opaque[?query][#fragment]\n\nNote that the Path field is stored in decoded form: /%47%6f%2f becomes /Go/.\nA consequence is that it is impossible to tell which slashes in the Path were\nslashes in the raw URL and which were %2f. This distinction is rarely important,\nbut when it is, the code should use RawPath, an optional field which only gets\nset if the default encoding is different from Path.\n\nURL's String method uses the EscapedPath method to obtain the path. See the\nEscapedPath method for more details.",
       "type": "object",
-      "title": "URL is a custom URL type that allows validation at configuration load time.",
+      "title": "A URL represents a parsed URL (technically, a URI reference).",
       "properties": {
         "ForceQuery": {
           "type": "boolean"
@@ -2941,37 +2910,7 @@
           "$ref": "#/definitions/Userinfo"
         }
       },
-      "x-go-package": "github.com/prometheus/common/config"
-    },
-    "UpdateAlertDefinitionCommand": {
-      "type": "object",
-      "title": "UpdateAlertDefinitionCommand is the query for updating an existing alert definition.",
-      "properties": {
-        "Result": {
-          "$ref": "#/definitions/AlertDefinition"
-        },
-        "condition": {
-          "type": "string",
-          "x-go-name": "Condition"
-        },
-        "data": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/AlertQuery"
-          },
-          "x-go-name": "Data"
-        },
-        "intervalSeconds": {
-          "type": "integer",
-          "format": "int64",
-          "x-go-name": "IntervalSeconds"
-        },
-        "title": {
-          "type": "string",
-          "x-go-name": "Title"
-        }
-      },
-      "x-go-package": "github.com/grafana/grafana/pkg/services/ngalert/models"
+      "x-go-package": "net/url"
     },
     "Userinfo": {
       "description": "The Userinfo type is an immutable encapsulation of username and\npassword details for a URL. An existing Userinfo value is guaranteed\nto have a username set (potentially empty, as allowed by RFC 2396),\nand optionally a password.",

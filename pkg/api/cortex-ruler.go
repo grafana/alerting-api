@@ -202,11 +202,21 @@ const (
 	KeepLastStateErrState ExecutionErrorState = "KeepLastState"
 )
 
-// ExtendedUpsertAlertDefinitionCommand extends UpsertAlertDefinitionCommand
+// swagger:model
+type ExtendedUpdateAlertDefinitionCommand struct {
+	Title           string              `json:"title"`
+	OrgID           int64               `json:"-"`
+	Condition       string              `json:"condition"`
+	Data            []models.AlertQuery `json:"data"`
+	IntervalSeconds *int64              `json:"intervalSeconds"`
+	UID             string              `json:"-"`
+}
+
+// ExtendedUpsertAlertDefinitionCommand extends ExtendedUpdateAlertDefinitionCommand
 // with properties of grafana dashboard alerts
 // swagger:model
 type ExtendedUpsertAlertDefinitionCommand struct {
-	models.UpdateAlertDefinitionCommand
+	ExtendedUpdateAlertDefinitionCommand
 	NoDataState         NoDataState            `json:"no_data_state" yaml:"no_data_state"`
 	ExecutionErrorState ExecutionErrorState    `json:"exec_err_state" yaml:"exec_err_state"`
 	Settings            map[string]interface{} `json:"settings" yaml:"settings"`
