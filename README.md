@@ -1,3 +1,7 @@
+# WARNING: deprecated
+
+This repo has been into [Grafana](https://github.com/grafana/grafana).
+
 ## What
 
 [view api](https://grafana.github.io/alerting-api/)
