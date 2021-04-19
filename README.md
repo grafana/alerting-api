@@ -1,6 +1,6 @@
 # WARNING: deprecated
 
-This repo has been into [Grafana](https://github.com/grafana/grafana).
+This repo has been [merged](https://github.com/grafana/grafana/pull/33129) into [Grafana](https://github.com/grafana/grafana).
 
 ## What
 
